@@ -1,0 +1,108 @@
+openapi: 3.1.0
+info:
+  title: 元组嵌套与循环引用测试用例
+  version: 1.0.0
+  description: 包含元组嵌套、元组循环引用的测试Schema集合
+components:
+  schemas:
+    基础嵌套元组:
+      type: array
+      items:
+        - type: array
+          items:
+            - type: string
+              example: 测试字符串
+            - type: number
+              example: 123.45
+          minItems: 2
+          maxItems: 2
+        - type: array
+          items:
+            - type: boolean
+              example: true
+            - type: null
+              example: null
+          minItems: 2
+          maxItems: 2
+      minItems: 2
+      maxItems: 2
+    多层级嵌套元组:
+      type: array
+      items:
+        - type: array
+          items:
+            - type: array
+              items:
+                - type: integer
+                  example: 10
+                - type: integer
+                  example: 20
+              minItems: 2
+              maxItems: 2
+          minItems: 1
+          maxItems: 1
+      minItems: 1
+      maxItems: 1
+    循环引用元组:
+      $id: '#CycleTuple'
+      type: array
+      items:
+        - type: string
+          example: 层级标识
+        - type: array
+          items:
+            $ref: '#CycleTuple'
+          example: []
+      minItems: 2
+      maxItems: 2
+    嵌套循环元组:
+      $id: '#NestedCycleTuple'
+      type: array
+      items:
+        - type: array
+          items:
+            - type: number
+              example: 3.14
+            - $ref: '#NestedCycleTuple'
+          minItems: 2
+          maxItems: 2
+      minItems: 1
+      maxItems: 1
+paths:
+  /test/basic-nested:
+    get:
+      summary: 测试基础嵌套元组
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/基础嵌套元组'
+      parameters: []
+  /test/multi-level-nested:
+    get:
+      summary: 测试多层级嵌套元组
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/多层级嵌套元组'
+  /test/cycle-reference:
+    get:
+      summary: 测试元组包含循环引用数组
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/循环引用元组'
+  /test/nested-cycle:
+    get:
+      summary: 测试嵌套元组+循环引用
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/嵌套循环元组'
